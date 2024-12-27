@@ -1,27 +1,26 @@
 import turtle as t
 
 class Disk(object):
-    def __init__(self, name="", xpos=0, ypos=0, height=20, width=40):
+    def __init__(self, name="", xpos=0, ypos=0, height=20, width=40, color="blue"):
         self.dname = name
         self.dxpos = xpos
         self.dypos = ypos
         self.dheight = height
         self.dwidth = width
+        self.color = color
 
     def showdisk(self):
         t.penup()
-        t.goto(self.dxpos, self.dypos)
+        t.goto(self.dxpos - self.dwidth / 2, self.dypos)  # Position to start drawing
         t.pendown()
-
-        t.setheading(0)  
-        t.forward(self.dwidth / 2)
-        t.backward(self.dwidth)
-        t.left(90)
-        t.forward(self.dheight)
-        t.right(90)
-        t.forward(self.dwidth)
-        t.right(90)
-        t.forward(self.dheight)
+        t.fillcolor(self.color)
+        t.begin_fill()
+        for _ in range(2):
+            t.forward(self.dwidth)
+            t.left(90)
+            t.forward(self.dheight)
+            t.left(90)
+        t.end_fill()
         t.penup()
 
     def newpos(self, xpos, ypos):
@@ -33,8 +32,9 @@ class Disk(object):
         self.showdisk()
         t.color("black")
 
+
 class Pole(object):
-    def __init__(self, name="", xpos=0, ypos=0, thick=10, length=100):
+    def __init__(self, name="", xpos=0, ypos=0, thick=10, length=100, color="brown"):
         self.pname = name
         self.stack = [] 
         self.toppos = ypos
@@ -42,23 +42,21 @@ class Pole(object):
         self.pypos = ypos
         self.pthick = thick
         self.plength = length
+        self.color = color
 
     def showpole(self):
-
         t.penup()
-        t.goto(self.pxpos, self.pypos)  
+        t.goto(self.pxpos - self.pthick / 2, self.pypos)  
         t.pendown()
-        t.setheading(0)
-        t.forward(self.pthick)
-        t.left(90)
-        t.forward(self.plength)
-        t.left(90)
-        t.forward(self.pthick)
-        t.left(90)
-        t.forward(self.plength)
-        t.left(90)
+        t.fillcolor(self.color)
+        t.begin_fill()
+        for _ in range(2):
+            t.forward(self.pthick)
+            t.left(90)
+            t.forward(self.plength)
+            t.left(90)
+        t.end_fill()
         t.penup()
-        
 
     def pushdisk(self, disk):
         if self.stack:
@@ -81,18 +79,21 @@ class Pole(object):
             return disk
         return None  
 
+
 class Hanoi(object):
     def __init__(self, n=3, start="A", workspace="B", destination="C"):
-        self.startp = Pole(start, 0, 0)
-        self.workspacep = Pole(workspace, 150, 0)
-        self.destinationp = Pole(destination, 300, 0)
+        self.startp = Pole(start, 0, 0, color="darkgreen")
+        self.workspacep = Pole(workspace, 150, 0, color="darkred")
+        self.destinationp = Pole(destination, 300, 0, color="darkblue")
 
         self.startp.showpole()
         self.workspacep.showpole()
         self.destinationp.showpole()
 
+        colors = ["red", "orange", "yellow", "green", "blue", "purple"]
         for i in range(n):
-            disk = Disk(f"d{i+1}", 0, i * 20, 20, (n-i) * 30)
+            disk_color = colors[i % len(colors)]
+            disk = Disk(f"d{i+1}", 0, i * 20, 20, (n-i) * 30, color=disk_color)
             self.startp.pushdisk(disk)
 
     def move_disk(self, start, destination):
