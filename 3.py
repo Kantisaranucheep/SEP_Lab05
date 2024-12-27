@@ -9,9 +9,12 @@ class Disk(object):
         self.dwidth = width
 
     def showdisk(self):
-        t.teleport(self.dxpos, self.dypos)
-        t.speed(1)
-        t.forward(self.dwidth/2)
+        t.penup()
+        t.goto(self.dxpos, self.dypos)
+        t.pendown()
+
+        t.setheading(0)  
+        t.forward(self.dwidth / 2)
         t.backward(self.dwidth)
         t.left(90)
         t.forward(self.dheight)
@@ -19,11 +22,11 @@ class Disk(object):
         t.forward(self.dwidth)
         t.right(90)
         t.forward(self.dheight)
-        t.teleport(self.dxpos, self.dypos)
-        t.left(90)
+        t.penup()
 
     def newpos(self, xpos, ypos):
-        t.teleport(xpos, ypos)
+        self.dxpos = xpos
+        self.dypos = ypos
 
     def cleardisk(self):
         t.color("white")
@@ -31,25 +34,88 @@ class Disk(object):
         t.color("black")
 
 class Pole(object):
-    def __init__(self, name="", xpos=0, ypos=0,thick=10, length=100):
+    def __init__(self, name="", xpos=0, ypos=0, thick=10, length=100):
         self.pname = name
-        self.stack = []
-        self.toppos = 0
+        self.stack = [] 
+        self.toppos = ypos
         self.pxpos = xpos
         self.pypos = ypos
         self.pthick = thick
         self.plength = length
 
     def showpole(self):
-        pass
+
+        t.penup()
+        t.goto(self.pxpos, self.pypos)  
+        t.pendown()
+        t.setheading(0)
+        t.forward(self.pthick)
+        t.left(90)
+        t.forward(self.plength)
+        t.left(90)
+        t.forward(self.pthick)
+        t.left(90)
+        t.forward(self.plength)
+        t.left(90)
+        t.penup()
+        
 
     def pushdisk(self, disk):
-        pass
+        if self.stack:
+            disk.newpos(self.pxpos, self.toppos + 20)
+            self.toppos += disk.dheight  
+        else:
+            disk.newpos(self.pxpos, self.pypos + 20)
+            self.toppos = self.pypos + disk.dheight
+        self.stack.append(disk)  
+        disk.showdisk() 
 
     def popdisk(self):
-        pass
+        if self.stack:
+            disk = self.stack.pop()
+            disk.cleardisk()  
+            if self.stack:
+                self.toppos -= disk.dheight
+            else:
+                self.toppos = self.pypos
+            return disk
+        return None  
 
-d= Disk()
-d.showdisk()
-d.cleardisk()
+class Hanoi(object):
+    def __init__(self, n=3, start="A", workspace="B", destination="C"):
+        self.startp = Pole(start, 0, 0)
+        self.workspacep = Pole(workspace, 150, 0)
+        self.destinationp = Pole(destination, 300, 0)
+
+        self.startp.showpole()
+        self.workspacep.showpole()
+        self.destinationp.showpole()
+
+        for i in range(n):
+            disk = Disk(f"d{i+1}", 0, i * 20, 20, (n-i) * 30)
+            self.startp.pushdisk(disk)
+
+    def move_disk(self, start, destination):
+        disk = start.popdisk()
+        if disk:
+            destination.pushdisk(disk)
+
+    def move_tower(self, n, s, d, w):
+        if n == 1:
+            self.move_disk(s, d)
+        else:
+            self.move_tower(n-1, s, w, d)
+            self.move_disk(s, d)
+            self.move_tower(n-1, w, d, s)
+
+    def solve(self):
+        self.move_tower(3, self.startp, self.destinationp, self.workspacep)
+
+
+t.speed(0) 
+t.bgcolor("white")
+
+h = Hanoi()
+h.solve()
+
 t.done()
