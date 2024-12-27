@@ -1,19 +1,34 @@
+import turtle as t
+
 class Disk(object):
     def __init__(self, name="", xpos=0, ypos=0, height=20, width=40):
         self.dname = name
-        self.dexpos = xpos
+        self.dxpos = xpos
         self.dypos = ypos
-        self.dheigt = height
+        self.dheight = height
         self.dwidth = width
 
     def showdisk(self):
-        pass
+        t.teleport(self.dxpos, self.dypos)
+        t.speed(1)
+        t.forward(self.dwidth/2)
+        t.backward(self.dwidth)
+        t.left(90)
+        t.forward(self.dheight)
+        t.right(90)
+        t.forward(self.dwidth)
+        t.right(90)
+        t.forward(self.dheight)
+        t.teleport(self.dxpos, self.dypos)
+        t.left(90)
 
     def newpos(self, xpos, ypos):
-        pass
+        t.teleport(xpos, ypos)
 
     def cleardisk(self):
-        pass
+        t.color("white")
+        self.showdisk()
+        t.color("black")
 
 class Pole(object):
     def __init__(self, name="", xpos=0, ypos=0,thick=10, length=100):
@@ -33,4 +48,8 @@ class Pole(object):
 
     def popdisk(self):
         pass
-    
+
+d= Disk()
+d.showdisk()
+d.cleardisk()
+t.done()
